@@ -26,7 +26,7 @@ public class LPC_compress {    //LPC:linear predictive coding  线性预测编�
             x[4] = (i % num_index == num_index - 1 || i < num_index) ? 0 : (pixel_array[i - num_index + 1] & 0xff);
             x[0] = (int) (x[1] * a[0] + x[2] * a[1] + x[3] * a[2] + x[4] * a[3]);
             e = (pixel_array[i] & 0xff) - x[0];     //计算初始预测误差
-            E = (q == 1) ? e + 255 : mapping(e, x[0]); //根据题号选择映射规则，第2,3问中：将预测值取整后，再参与映射，以保证映射和逆映射一致，实现无失真传输
+            E = (q == 1) ? e + 255 : mapping(e, x[0]); //根据题号选择映射规则，映射LPC中：将预测值取整后，再参与映射，以保证映射和逆映射一致，实现无失真传输
             enc.write(freqs, E);
             freqs.increment(E);
         }
@@ -35,14 +35,14 @@ public class LPC_compress {    //LPC:linear predictive coding  线性预测编�
     //    权重读取
     public double[] get_weight(int sel, File weightFile) throws IOException {   //获得预测权值
         double[] a = new double[4];     //权值数组
-        if (sel == 3) {     //第三问需要从外部文件读入权值数据
+        if (sel == 3) {     //最佳LPC需要从外部文件读入权值数据
             try (FileInputStream weightStream = new FileInputStream(weightFile);
                  BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(weightStream))) {
                 for (int i = 0; i < 4; i++) {   //按行获得权值信息，并幅值给a数组
                     a[i] = Double.parseDouble(bufferedReader.readLine());
                 }
             }
-        } else {    //第一二问权值均为0.25
+        } else {    //非最佳LPC权值均为0.25
             for (int i = 0; i < 4; i++) {
                 a[i] = 0.25;
             }

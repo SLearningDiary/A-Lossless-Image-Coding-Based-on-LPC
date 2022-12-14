@@ -25,7 +25,7 @@ public class LPC_decompress {    //LPC:linear predictive coding  线性预测编
                 x[3] = (row == 0) ? 0 : pixel_array[row - 1][column];
                 x[4] = (column == num_index - 1 || row == 0) ? 0 : pixel_array[row - 1][column + 1];
                 x[0] = x[1] * a[0] + x[2] * a[1] + x[3] * a[2] + x[4] * a[3];
-                e = (q == 1) ? E - 255 : inverse_mapping(E, (int) x[0]);  //根据题号选择映射规则，第2,3问中：将预测值取整后，再参与逆映射，以保证映射和逆映射一致，实现无失真传输
+                e = (q == 1) ? E - 255 : inverse_mapping(E, (int) x[0]);  //根据题号选择映射规则，映射LPC中：将预测值取整后，再参与逆映射，以保证映射和逆映射一致，实现无失真传输
                 pixel_array[row][column] = e + (int) x[0];
                 out.write(pixel_array[row][column]);
                 freqs.increment(E); //在频率表统计的仍为映射后，缩小范围的E；求逆映射仅为求解出原像素值
@@ -36,14 +36,14 @@ public class LPC_decompress {    //LPC:linear predictive coding  线性预测编
     //    权重读取
     public double[] get_weight(int sel, File weightFile) throws IOException {   //获得预测权值
         double[] a = new double[4];
-        if (sel == 3) {     //第三问需要从外部文件读入权值数据
+        if (sel == 3) {     //最佳LPC需要从外部文件读入权值数据
             try (FileInputStream weightStream = new FileInputStream(weightFile);
                  BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(weightStream))) {
                 for (int i = 0; i < 4; i++) {
                     a[i] = Double.parseDouble(bufferedReader.readLine());
                 }
             }
-        } else {   //第一二问权值均为0.25
+        } else {   //非最佳LPC权值均为0.25
             for (int i = 0; i < 4; i++) {
                 a[i] = 0.25;
             }
